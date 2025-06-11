@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>利润提成计算器</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f4f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: #fff;
+      padding: 24px 28px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      max-width: 400px;
+      width: 100%;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    label {
+      margin-top: 14px;
+      font-weight: bold;
+      display: block;
+    }
+    input[type="number"] {
+      width: 100%;
+      padding: 8px;
+      margin-top: 6px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+    input[type="range"] {
+      width: 100%;
+      margin-top: 6px;
+    }
+    #profitRateValue {
+      color: #007bff;
+      font-weight: bold;
+      margin-left: 6px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 18px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #result {
+      margin-top: 20px;
+      background: #f9f9f9;
+      padding: 16px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>利润提成计算器</h1>
+
+  <label for="priceCNY">人民币售价 (万元)：</label>
+  <input type="number" id="priceCNY" placeholder="例如 345" oninput="syncFromCNY()" />
+
+  <label for="priceUSD">美元售价 ($)：</label>
+  <input type="number" id="priceUSD" placeholder="例如 47916.67" oninput="syncFromUSD()" />
+
+  <label for="exchangeRate">汇率 (1 美元 = 人民币)：</label>
+  <input type="number" id="exchangeRate" value="7.2" step="0.01" oninput="syncFromCNY()" />
+
+  <label for="miscUSD">港杂费用 (美元)：</label>
+  <input type="number" id="miscUSD" placeholder="例如 1500" />
+
+  <label for="profitRate">利润率：<span id="profitRateValue">8</span>%</label>
+  <input type="range" id="profitRate" min="1" max="30" value="8" />
+
+  <button onclick="calculate()">计算提成</button>
+  <div id="result"></div>
+</div>
+
+<script>
+function syncFromCNY() {
+  const cny = parseFloat(document.getElementById('priceCNY').value);
+  const rate = parseFloat(document.getElementById('exchangeRate').value);
+  if (!isNaN(cny) && !isNaN(rate)) {
+    const usd = cny * 10000 / rate;
+    document.getElementById('priceUSD').value = usd.toFixed(2);
+  }
+}
+
+function syncFromUSD() {
+  const usd = parseFloat(document.getElementById('priceUSD').value);
+  const rate = parseFloat(document.getElementById('exchangeRate').value);
+  if (!isNaN(usd) && !isNaN(rate)) {
+    const cny = usd * rate / 10000;
+    document.getElementById('priceCNY').value = cny.toFixed(4);
+  }
+}
+
+function calculate() {
+  const priceUSD = parseFloat(document.getElementById("priceUSD").value);
+  const miscUSD = parseFloat(document.getElementById("miscUSD").value);
+  const profitRate = parseFloat(document.getElementById("profitRate").value) / 100;
+
+  if (isNaN(priceUSD) || isNaN(miscUSD)) {
+    document.getElementById("result").innerHTML = "<p style='color:red;'>请输入有效数值</p>";
+    return;
+  }
+
+  const costUSD = (priceUSD - miscUSD) / (1 + profitRate);
+  const profitUSD = priceUSD - miscUSD - costUSD;
+  const commission = profitUSD * 0.2;
+
+  document.getElementById("result").innerHTML = `
+    <p>成本：$${costUSD.toFixed(2)}</p>
+    <p>利润：$${profitUSD.toFixed(2)}</p>
+    <p>提成：💰 $${commission.toFixed(2)}</p>
+  `;
+}
+
+document.getElementById("profitRate").addEventListener("input", function () {
+  document.getElementById("profitRateValue").textContent = this.value;
+});
+</script>
+</body>
+</html>
