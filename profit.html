@@ -2,18 +2,31 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>利润提成计算器</title>
-  <link rel="icon" href="favicon.ico" type="image/x-icon" />
   <style>
     body {
       font-family: Arial, sans-serif;
       background: #f2f4f8;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
       margin: 0;
+      padding: 20px;
+    }
+    .nav-bar {
+      text-align: right;
+      margin-bottom: 10px;
+    }
+    .nav-btn {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s;
+    }
+    .nav-btn:hover {
+      background-color: #0056b3;
     }
     .container {
       background: #fff;
@@ -21,7 +34,7 @@
       border-radius: 10px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
       max-width: 400px;
-      width: 100%;
+      margin: 0 auto;
     }
     h1 {
       text-align: center;
@@ -49,10 +62,10 @@
       font-weight: bold;
       margin-left: 6px;
     }
-    button {
+    button.calc-btn {
       width: 100%;
       padding: 10px;
-      margin-top: 18px;
+      margin-top: 12px;
       background-color: #007bff;
       color: white;
       border: none;
@@ -60,8 +73,22 @@
       font-size: 16px;
       cursor: pointer;
     }
-    button:hover {
+    button.calc-btn:hover {
       background-color: #0056b3;
+    }
+    button.clear-btn {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button.clear-btn:hover {
+      background-color: #a71d2a;
     }
     #result {
       margin-top: 20px;
@@ -69,75 +96,92 @@
       padding: 16px;
       border-radius: 6px;
       border: 1px solid #ddd;
+      min-height: 80px;
     }
   </style>
 </head>
 <body>
-<div class="container">
-  <h1>利润提成计算器</h1>
+  <div class="nav-bar">
+    <button class="nav-btn" onclick="location.href='second.html'">去第二页 &raquo;</button>
+  </div>
 
-  <label for="priceCNY">人民币售价 (万元)：</label>
-  <input type="number" id="priceCNY" placeholder="例如 345" oninput="syncFromCNY()" />
+  <div class="container">
+    <h1>利润提成计算器</h1>
 
-  <label for="priceUSD">美元售价 ($)：</label>
-  <input type="number" id="priceUSD" placeholder="例如 47916.67" oninput="syncFromUSD()" />
+    <label for="priceCNY">人民币售价 (万元)：</label>
+    <input type="number" id="priceCNY" oninput="syncFromCNY()" />
 
-  <label for="exchangeRate">汇率 (1 美元 = 人民币)：</label>
-  <input type="number" id="exchangeRate" value="7.2" step="0.01" oninput="syncFromCNY()" />
+    <label for="priceUSD">美元售价 ($)：</label>
+    <input type="number" id="priceUSD" oninput="syncFromUSD()" />
 
-  <label for="miscUSD">港杂费用 (美元)：</label>
-  <input type="number" id="miscUSD" placeholder="例如 1500" />
+    <label for="exchangeRate">汇率 (1 美元 = 人民币)：</label>
+    <input type="number" id="exchangeRate" value="7.2" step="0.01" oninput="syncFromCNY()" />
 
-  <label for="profitRate">利润率：<span id="profitRateValue">8</span>%</label>
-  <input type="range" id="profitRate" min="1" max="30" value="8" />
+    <label for="miscUSD">港杂费用 (美元)：</label>
+    <input type="number" id="miscUSD" />
 
-  <button onclick="calculate()">计算提成</button>
-  <div id="result"></div>
-</div>
+    <label for="profitRate">利润率：<span id="profitRateValue">8</span>%</label>
+    <input type="range" id="profitRate" min="1" max="30" value="8" />
 
-<script>
-function syncFromCNY() {
-  const cny = parseFloat(document.getElementById('priceCNY').value);
-  const rate = parseFloat(document.getElementById('exchangeRate').value);
-  if (!isNaN(cny) && !isNaN(rate)) {
-    const usd = cny * 10000 / rate;
-    document.getElementById('priceUSD').value = usd.toFixed(2);
-  }
-}
+    <button class="calc-btn" onclick="calculate()">计算提成</button>
+    <button class="clear-btn" onclick="clearFields()">清除所有</button>
 
-function syncFromUSD() {
-  const usd = parseFloat(document.getElementById('priceUSD').value);
-  const rate = parseFloat(document.getElementById('exchangeRate').value);
-  if (!isNaN(usd) && !isNaN(rate)) {
-    const cny = usd * rate / 10000;
-    document.getElementById('priceCNY').value = cny.toFixed(4);
-  }
-}
+    <div id="result"></div>
+  </div>
 
-function calculate() {
-  const priceUSD = parseFloat(document.getElementById("priceUSD").value);
-  const miscUSD = parseFloat(document.getElementById("miscUSD").value);
-  const profitRate = parseFloat(document.getElementById("profitRate").value) / 100;
+  <script>
+    function syncFromCNY() {
+      const cny = parseFloat(document.getElementById('priceCNY').value);
+      const rate = parseFloat(document.getElementById('exchangeRate').value);
+      if (!isNaN(cny) && !isNaN(rate)) {
+        const usd = cny * 10000 / rate;
+        document.getElementById('priceUSD').value = usd.toFixed(2);
+      }
+    }
 
-  if (isNaN(priceUSD) || isNaN(miscUSD)) {
-    document.getElementById("result").innerHTML = "<p style='color:red;'>请输入有效数值</p>";
-    return;
-  }
+    function syncFromUSD() {
+      const usd = parseFloat(document.getElementById('priceUSD').value);
+      const rate = parseFloat(document.getElementById('exchangeRate').value);
+      if (!isNaN(usd) && !isNaN(rate)) {
+        const cny = usd * rate / 10000;
+        document.getElementById('priceCNY').value = cny.toFixed(4);
+      }
+    }
 
-  const costUSD = (priceUSD - miscUSD) / (1 + profitRate);
-  const profitUSD = priceUSD - miscUSD - costUSD;
-  const commission = profitUSD * 0.2;
+    function calculate() {
+      const priceUSD = parseFloat(document.getElementById("priceUSD").value);
+      const miscUSD = parseFloat(document.getElementById("miscUSD").value);
+      const profitRate = parseFloat(document.getElementById("profitRate").value) / 100;
 
-  document.getElementById("result").innerHTML = `
-    <p>成本：$${costUSD.toFixed(2)}</p>
-    <p>利润：$${profitUSD.toFixed(2)}</p>
-    <p>提成：💰 $${commission.toFixed(2)}</p>
-  `;
-}
+      if (isNaN(priceUSD) || isNaN(miscUSD)) {
+        document.getElementById("result").innerHTML = "<p style='color:red;'>请输入有效数值</p>";
+        return;
+      }
 
-document.getElementById("profitRate").addEventListener("input", function () {
-  document.getElementById("profitRateValue").textContent = this.value;
-});
-</script>
+      const costUSD = (priceUSD - miscUSD) / (1 + profitRate);
+      const profitUSD = priceUSD - miscUSD - costUSD;
+      const commission = profitUSD * 0.2;
+
+      document.getElementById("result").innerHTML = `
+        <p>成本：$${costUSD.toFixed(2)}</p>
+        <p>利润：$${profitUSD.toFixed(2)}</p>
+        <p>提成：💰 $${commission.toFixed(2)}</p>
+      `;
+    }
+
+    function clearFields() {
+      document.getElementById("priceCNY").value = "";
+      document.getElementById("priceUSD").value = "";
+      document.getElementById("exchangeRate").value = "7.2";
+      document.getElementById("miscUSD").value = "";
+      document.getElementById("profitRate").value = "8";
+      document.getElementById("profitRateValue").textContent = "8";
+      document.getElementById("result").innerHTML = "";
+    }
+
+    document.getElementById("profitRate").addEventListener("input", function () {
+      document.getElementById("profitRateValue").textContent = this.value;
+    });
+  </script>
 </body>
 </html>
