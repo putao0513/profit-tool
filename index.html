@@ -25,8 +25,10 @@
       font-size: 14px;
       transition: background-color 0.3s;
     }
-    .nav-btn:hover {
+    .nav-btn:hover,
+    .nav-btn:focus {
       background-color: #0056b3;
+      outline: none;
     }
     .container {
       background: #fff;
@@ -52,6 +54,7 @@
       border-radius: 5px;
       border: 1px solid #ccc;
       font-size: 14px;
+      box-sizing: border-box;
     }
     input[type="range"] {
       width: 100%;
@@ -72,9 +75,12 @@
       border-radius: 6px;
       font-size: 16px;
       cursor: pointer;
+      transition: background-color 0.3s;
     }
-    button.calc-btn:hover {
+    button.calc-btn:hover,
+    button.calc-btn:focus {
       background-color: #0056b3;
+      outline: none;
     }
     button.clear-btn {
       width: 100%;
@@ -86,9 +92,12 @@
       border-radius: 6px;
       font-size: 16px;
       cursor: pointer;
+      transition: background-color 0.3s;
     }
-    button.clear-btn:hover {
+    button.clear-btn:hover,
+    button.clear-btn:focus {
       background-color: #a71d2a;
+      outline: none;
     }
     #result {
       margin-top: 20px;
@@ -102,7 +111,7 @@
 </head>
 <body>
   <div class="nav-bar">
-    <button class="nav-btn" onclick="location.href='second.html'">去第二页 &raquo;</button>
+    <button class="nav-btn" onclick="location.href='second.html'" aria-label="跳转到第二页">去第二页 &raquo;</button>
   </div>
 
   <div class="container">
@@ -136,6 +145,8 @@
       if (!isNaN(cny) && !isNaN(rate)) {
         const usd = cny * 10000 / rate;
         document.getElementById('priceUSD').value = usd.toFixed(2);
+      } else {
+        document.getElementById('priceUSD').value = '';
       }
     }
 
@@ -145,6 +156,8 @@
       if (!isNaN(usd) && !isNaN(rate)) {
         const cny = usd * rate / 10000;
         document.getElementById('priceCNY').value = cny.toFixed(4);
+      } else {
+        document.getElementById('priceCNY').value = '';
       }
     }
 
